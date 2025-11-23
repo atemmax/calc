@@ -1,6 +1,7 @@
 const CACHE_NAME = 'clicker-pwa-v1';
 const urlsToCache = [
   '/',
+  '/shop',
   '/phone.html',
   '/manifest.json',
   '/icon-192.png',
